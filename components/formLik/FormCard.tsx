@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { linkSchema } from "@/validation/userValidation"; // Import the schema
-// import { z } from "zod";
+import { linkSchema } from "@/validation/userValidation";
+import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -14,11 +15,12 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card"; // Import your Card components
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
 
 const FromCard = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage loading
   const form = useForm({
-    resolver: zodResolver(linkSchema), // Connect schema
+    resolver: zodResolver(linkSchema),
     defaultValues: {
       name: "",
       instagram: "",
@@ -28,9 +30,10 @@ const FromCard = () => {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: Record<string, string>) => {
+    setIsSubmitting(true); // Start loader
     try {
-      const response = await fetch("/api/saveProfile", {
+      const response = await fetch("/api/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,12 +44,18 @@ const FromCard = () => {
       const result = await response.json();
 
       if (response.ok) {
+        toast.success("Profile saved successfully!");
         console.log("Profile saved:", result.profile);
+        form.reset(); // Reset the form after successful submission
       } else {
+        toast.error(result.message || "Failed to save profile.");
         console.error("Error saving profile:", result.message);
       }
     } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
       console.error("Error:", error);
+    } finally {
+      setIsSubmitting(false); // Stop loader
     }
   };
 
@@ -58,8 +67,7 @@ const FromCard = () => {
             Update Your Social Media Profiles
           </CardTitle>
           <CardDescription className="text-gray-400">
-            Please enter the links to your social media accounts below. 
-            Remember to update your photo in Google Drive. The link has been shared in the WhatsApp group.
+            Please enter the links to your social media accounts below and update your image in drive link.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,10 +81,7 @@ const FromCard = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter your name"
-                        {...field}
-                      />
+                      <Input placeholder="Enter your name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -95,10 +100,7 @@ const FromCard = () => {
                         {platform.charAt(0).toUpperCase() + platform.slice(1)} Profile Link
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={`Enter your ${platform} profile link`}
-                          {...field}
-                        />
+                        <Input placeholder={`Enter your ${platform} profile link`} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -107,8 +109,19 @@ const FromCard = () => {
               ))}
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
-                Submit
+              <Button
+                type="submit"
+                className={`w-full ${isSubmitting ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
+                disabled={isSubmitting} // Disable button during submission
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                    <span>Submitting...</span>
+                  </div>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           </Form>
