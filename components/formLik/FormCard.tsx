@@ -17,7 +17,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
 
-const FromCard = () => {
+const FormCard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // State to manage loading
   const form = useForm({
     resolver: zodResolver(linkSchema),
@@ -59,6 +59,13 @@ const FromCard = () => {
     }
   };
 
+  const platforms: ("instagram" | "linkedin" | "twitter" | "facebook")[] = [
+    "instagram",
+    "linkedin",
+    "twitter",
+    "facebook",
+  ];
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-black">
       <Card className="bg-richblack-900 text-white max-w-lg w-full p-6 shadow-lg rounded-lg">
@@ -89,7 +96,7 @@ const FromCard = () => {
               />
 
               {/* Social Media Links */}
-              {["instagram", "linkedin", "twitter", "facebook"].map((platform) => (
+              {platforms.map((platform) => (
                 <FormField
                   key={platform}
                   name={platform}
@@ -131,4 +138,4 @@ const FromCard = () => {
   );
 };
 
-export default FromCard;
+export default FormCard;
