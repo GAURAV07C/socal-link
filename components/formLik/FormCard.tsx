@@ -71,7 +71,7 @@ const FormCard = () => {
       <Card className="bg-richblack-900 text-white max-w-lg w-full p-6 shadow-lg rounded-lg">
         <CardHeader>
           <CardTitle className="text-white text-2xl font-bold">
-            Update Your Social Media Profiles
+          DevAurasion Member Update Your Social Media Profiles
           </CardTitle>
           <CardDescription className="text-gray-400">
             Please enter the links to your social media accounts below and update your image in drive link.
